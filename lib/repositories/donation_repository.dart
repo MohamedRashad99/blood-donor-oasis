@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/donation_record.dart';
-import '../constants/app_constants.dart';
+import '../core/constants/app_constants.dart';
 
 abstract class DonationRepository {
   Future<List<DonationRecord>> getAllDonations();
