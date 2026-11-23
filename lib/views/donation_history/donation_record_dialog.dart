@@ -1,3 +1,4 @@
+import '../../core/responsive/adaptive_row.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
@@ -232,6 +233,7 @@ class _DonationRecordDialogState extends State<DonationRecordDialog> {
                           )
                         else
                           DropdownButtonFormField<Donor>(
+                        isExpanded: true,
                             value: _selectedDonor,
                             decoration: const InputDecoration(
                               labelText: 'اختيار المتبرع *',
@@ -260,11 +262,12 @@ class _DonationRecordDialogState extends State<DonationRecordDialog> {
                         const SizedBox(height: 14),
 
                         // Blood Type & Status
-                        Row(
+                        AdaptiveRow(
                           children: [
                             // Blood Type
                             Expanded(
                               child: DropdownButtonFormField<String>(
+                        isExpanded: true,
                                 value: _selectedBloodType,
                                 decoration: const InputDecoration(
                                   labelText: 'فصيلة الدم المسجلة *',
@@ -283,6 +286,7 @@ class _DonationRecordDialogState extends State<DonationRecordDialog> {
                             // Status
                             Expanded(
                               child: DropdownButtonFormField<String>(
+                        isExpanded: true,
                                 value: _selectedStatus,
                                 decoration: const InputDecoration(
                                   labelText: 'حالة التبرع *',
@@ -302,7 +306,7 @@ class _DonationRecordDialogState extends State<DonationRecordDialog> {
                         const SizedBox(height: 14),
 
                         // Date & Campaign
-                        Row(
+                        AdaptiveRow(
                           children: [
                             // Date
                             Expanded(
@@ -321,6 +325,7 @@ class _DonationRecordDialogState extends State<DonationRecordDialog> {
                             // Associated Campaign
                             Expanded(
                               child: DropdownButtonFormField<String?>(
+                        isExpanded: true,
                                 value: _selectedCampaignId,
                                 decoration: const InputDecoration(
                                   labelText: 'الحملة المرتبطة (اختياري)',

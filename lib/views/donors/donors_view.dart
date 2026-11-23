@@ -1,3 +1,4 @@
+import '../../core/responsive/adaptive_row.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
@@ -126,6 +127,7 @@ class _DonorsViewState extends State<DonorsView> {
                     SizedBox(
                       width: 140,
                       child: DropdownButtonFormField<String?>(
+                        isExpanded: true,
                         value: donorProv.selectedBloodType,
                         decoration: const InputDecoration(
                           labelText: 'فصيلة الدم',
@@ -145,6 +147,7 @@ class _DonorsViewState extends State<DonorsView> {
                     SizedBox(
                       width: 140,
                       child: DropdownButtonFormField<bool?>(
+                        isExpanded: true,
                         value: donorProv.selectedAvailability,
                         decoration: const InputDecoration(
                           labelText: 'حالة التوفر',
@@ -163,6 +166,7 @@ class _DonorsViewState extends State<DonorsView> {
                     SizedBox(
                       width: 160,
                       child: DropdownButtonFormField<String?>(
+                        isExpanded: true,
                         value: donorProv.selectedVillage,
                         decoration: const InputDecoration(
                           labelText: 'القرية / المنطقة',
@@ -203,7 +207,7 @@ class _DonorsViewState extends State<DonorsView> {
         const SizedBox(height: 16),
 
         // Result count & page status
-        Row(
+        AdaptiveRow(
           children: [
             Text(
               'نتائج البحث: ${donorProv.filteredDonors.length} متبرع (من إجمالي ${donorProv.totalDonorsCount})',
@@ -496,7 +500,7 @@ class _DonorsViewState extends State<DonorsView> {
                 const Divider(height: 1),
                 const SizedBox(height: 8),
 
-                Row(
+                AdaptiveRow(
                   children: [
                     const Icon(Icons.phone_outlined, size: 14, color: AppColors.textMuted),
                     const SizedBox(width: 6),
@@ -516,8 +520,8 @@ class _DonorsViewState extends State<DonorsView> {
                 const SizedBox(height: 10),
 
                 // Action buttons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                Wrap(spacing: 8, runSpacing: 8, crossAxisAlignment: WrapCrossAlignment.center,
+                  
                   children: [
                     if (donor.phone.isNotEmpty) ...[
                       IconButton.filledTonal(

@@ -1,3 +1,4 @@
+import '../../core/responsive/adaptive_row.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
@@ -134,7 +135,7 @@ class _ImportViewState extends State<ImportView> {
         Card(
           child: Padding(
             padding: const EdgeInsets.all(20),
-            child: Row(
+            child: AdaptiveRow(breakpoint: 900,
               children: [
                 Container(
                   width: 52,
@@ -190,10 +191,10 @@ class _ImportViewState extends State<ImportView> {
                   children: [
                     Icon(Icons.rule_folder_rounded, size: 20, color: AppColors.primaryRed),
                     SizedBox(width: 8),
-                    Text(
+                    Flexible(child: Text(
                       'خريطة مطابقة حقول البيانات وقواعد المعالجة:',
                       style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
-                    ),
+                    )),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -230,10 +231,10 @@ class _ImportViewState extends State<ImportView> {
                   children: [
                     Icon(Icons.file_upload_outlined, size: 20, color: AppColors.primaryRed),
                     SizedBox(width: 8),
-                    Text(
+                    Flexible(child: Text(
                       'استيراد سجلات جديدة من نص CSV أو جدول بيانات:',
                       style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
-                    ),
+                    )),
                   ],
                 ),
                 const SizedBox(height: 10),
@@ -254,7 +255,7 @@ class _ImportViewState extends State<ImportView> {
                 ),
                 const SizedBox(height: 14),
 
-                Row(
+                AdaptiveRow(
                   children: [
                     Checkbox(
                       value: _allowDuplicates,
@@ -300,7 +301,7 @@ class _ImportViewState extends State<ImportView> {
         children: [
           Icon(icon, size: 14, color: AppColors.primaryRed),
           const SizedBox(width: 6),
-          Text(title, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+          Flexible(child: Text(title, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.textPrimary))),
         ],
       ),
     );
@@ -313,7 +314,7 @@ class _ImportViewState extends State<ImportView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            AdaptiveRow(
               children: [
                 const Icon(Icons.task_alt_rounded, size: 22, color: AppColors.success),
                 const SizedBox(width: 8),

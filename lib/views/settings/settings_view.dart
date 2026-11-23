@@ -129,10 +129,10 @@ class SettingsView extends StatelessWidget {
                   children: [
                     Icon(Icons.font_download_rounded, size: 20, color: AppColors.primaryRed),
                     SizedBox(width: 8),
-                    Text(
+                    Flexible(child: Text(
                       'الخط واللغة وتجربة المستخدم (Cairo Font & Arabic RTL):',
                       style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
-                    ),
+                    )),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -159,10 +159,10 @@ class SettingsView extends StatelessWidget {
                   children: [
                     Icon(Icons.security_rounded, size: 20, color: AppColors.primaryRed),
                     SizedBox(width: 8),
-                    Text(
+                    Flexible(child: Text(
                       'معمارية البيانات والحماية والأمان (Architecture & Security):',
                       style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
-                    ),
+                    )),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -194,10 +194,10 @@ class SettingsView extends StatelessWidget {
                   children: [
                     Icon(Icons.save_rounded, size: 20, color: AppColors.primaryRed),
                     SizedBox(width: 8),
-                    Text(
+                    Flexible(child: Text(
                       'إدارة النسخ الاحتياطي والبيانات:',
                       style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
-                    ),
+                    )),
                   ],
                 ),
                 const SizedBox(height: 14),
@@ -243,10 +243,10 @@ class SettingsView extends StatelessWidget {
       children: [
         Icon(icon, size: 16, color: AppColors.primaryRed),
         const SizedBox(width: 8),
-        Text(
+        Flexible(child: Text(
           title,
           style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
-        ),
+        )),
         const SizedBox(width: 8),
         Expanded(
           child: Text(

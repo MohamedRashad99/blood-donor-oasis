@@ -1,3 +1,4 @@
+import '../../core/responsive/adaptive_row.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
@@ -22,7 +23,7 @@ class CampaignsView extends StatelessWidget {
         Card(
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: Row(
+            child: AdaptiveRow(
               children: [
                 const Icon(Icons.campaign_rounded, size: 24, color: AppColors.primaryRed),
                 const SizedBox(width: 10),
@@ -40,6 +41,7 @@ class CampaignsView extends StatelessWidget {
                 SizedBox(
                   width: 140,
                   child: DropdownButtonFormField<String?>(
+                        isExpanded: true,
                     value: campaignProv.selectedStatusFilter,
                     decoration: const InputDecoration(
                       labelText: 'تصفية الحالة',
@@ -112,6 +114,15 @@ class CampaignsView extends StatelessWidget {
                 cols = 2;
               }
 
+              if (cols == 1) {
+                return ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: campaigns.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 16),
+                  itemBuilder: (context, index) => _buildCampaignCard(context, campaignProv, campaigns[index]),
+                );
+              }
               return GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -124,7 +135,7 @@ class CampaignsView extends StatelessWidget {
                 ),
                 itemBuilder: (context, index) {
                   final camp = campaigns[index];
-                  return _buildCampaignCard(context, campaignProv, camp);
+                  return _buildCampaignCard(context, campaignProv, camp, fixedHeight: true);
                 },
               );
             },
@@ -133,7 +144,7 @@ class CampaignsView extends StatelessWidget {
     );
   }
 
-  Widget _buildCampaignCard(BuildContext context, CampaignProvider provider, Campaign camp) {
+  Widget _buildCampaignCard(BuildContext context, CampaignProvider provider, Campaign camp, {bool fixedHeight = false}) {
     Color statusColor = AppColors.info;
     Color statusBg = AppColors.infoBg;
     if (camp.status == AppConstants.campaignStatusCompleted) {
@@ -261,12 +272,12 @@ class CampaignsView extends StatelessWidget {
               ],
             ),
 
-            const Spacer(),
+            if (fixedHeight) const Spacer() else const SizedBox(height: 16),
             const Divider(height: 1),
             const SizedBox(height: 8),
 
             // Bottom Actions: Manage Participants, Edit, Delete
-            Row(
+            AdaptiveRow(
               children: [
                 OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
