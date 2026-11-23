@@ -21,6 +21,7 @@ Future<void> loadApp(WidgetTester tester) async {
     final donation = DonationProvider(await LocalDonationRepository.create());
     final auth = AuthProvider(await LocalAuthRepository.create());
     await Future<void>.delayed(const Duration(milliseconds: 100));
+    await auth.login('2026', '100100');
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: donor),
