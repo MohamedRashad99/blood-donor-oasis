@@ -1,3 +1,4 @@
+import '../../core/responsive/adaptive_row.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
@@ -197,7 +198,7 @@ class _CampaignFormDialogState extends State<CampaignFormDialog> {
                         const SizedBox(height: 14),
 
                         // Date & Status Row
-                        Row(
+                        AdaptiveRow(
                           children: [
                             // Date
                             Expanded(
@@ -216,6 +217,7 @@ class _CampaignFormDialogState extends State<CampaignFormDialog> {
                             // Status
                             Expanded(
                               child: DropdownButtonFormField<String>(
+                        isExpanded: true,
                                 initialValue: _selectedStatus,
                                 decoration: const InputDecoration(
                                   labelText: 'حالة الحملة *',
@@ -291,8 +293,8 @@ class _CampaignFormDialogState extends State<CampaignFormDialog> {
                 const SizedBox(height: 12),
 
                 // Buttons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                Wrap(spacing: 8, runSpacing: 8,
+                  alignment: WrapAlignment.end,
                   children: [
                     OutlinedButton(
                       onPressed: () => Navigator.pop(context),
