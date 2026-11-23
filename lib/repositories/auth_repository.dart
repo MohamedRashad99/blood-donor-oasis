@@ -8,8 +8,11 @@ abstract class AuthRepository {
   Future<void> logout();
 }
 
+/// Local demo gate only. These client-side checks are not production security.
 class LocalAuthRepository implements AuthRepository {
-  static const String _sessionKey = 'blood_auth_session_v1';
+  // Ignore sessions from the old permissive demo authentication.
+  static const String _sessionKey = 'blood_auth_session_v2';
+  static const String _legacySessionKey = 'blood_auth_session_v1';
   final SharedPreferences _prefs;
 
   LocalAuthRepository(this._prefs);
@@ -22,17 +25,14 @@ class LocalAuthRepository implements AuthRepository {
   @override
   Future<UserSession?> getCurrentUser() async {
     final jsonStr = _prefs.getString(_sessionKey);
-    if (jsonStr == null || jsonStr.trim().isEmpty) {
-      // Default initial session for immediate access, or require login
-      return const UserSession(
-        username: 'admin',
-        displayName: 'إدارة جمعية كفالة اليتيم',
-        role: 'مدير النظام',
-        isAuthenticated: true,
-      );
-    }
+    if (jsonStr == null || jsonStr.trim().isEmpty) return null;
     try {
-      return UserSession.fromJson(jsonDecode(jsonStr) as Map<String, dynamic>);
+      final session = UserSession.fromJson(
+        jsonDecode(jsonStr) as Map<String, dynamic>,
+      );
+      return session.username == '2026' && session.isAuthenticated
+          ? session
+          : null;
     } catch (_) {
       return null;
     }
@@ -40,24 +40,18 @@ class LocalAuthRepository implements AuthRepository {
 
   @override
   Future<UserSession> login(String username, String password) async {
-    // Demo authentication check
-    // In production, this calls a secure backend with token-based authentication (OAuth2 / JWT / Firebase Auth)
-    if (username.trim().isEmpty) {
-      throw 'يرجى إدخال اسم المستخدم';
+    if (username.trim().isEmpty) throw 'يرجى إدخال اسم المستخدم';
+    if (password.trim().isEmpty) throw 'يرجى إدخال كلمة المرور';
+    if (username != '2026' || password != '100100') {
+      throw 'اسم المستخدم أو كلمة المرور غير صحيحة';
     }
-    if (password.trim().isEmpty) {
-      throw 'يرجى إدخال كلمة المرور';
-    }
-
-    // Accept valid demo credentials
     final session = UserSession(
-      username: username.trim(),
-      displayName: username == 'admin' ? 'إدارة جمعية كفالة اليتيم' : username,
+      username: username,
+      displayName: 'إدارة جمعية كفالة اليتيم',
       role: 'مدير النظام',
       isAuthenticated: true,
       loginTime: DateTime.now(),
     );
-
     await _prefs.setString(_sessionKey, jsonEncode(session.toJson()));
     return session;
   }
@@ -65,5 +59,6 @@ class LocalAuthRepository implements AuthRepository {
   @override
   Future<void> logout() async {
     await _prefs.remove(_sessionKey);
+    await _prefs.remove(_legacySessionKey);
   }
 }
