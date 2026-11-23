@@ -1,3 +1,4 @@
+import '../../core/responsive/adaptive_row.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
@@ -112,7 +113,7 @@ class _ReportsViewState extends State<ReportsView> with SingleTickerProviderStat
         Card(
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: Row(
+            child: AdaptiveRow(
               children: [
                 const Icon(Icons.analytics_rounded, size: 24, color: AppColors.primaryRed),
                 const SizedBox(width: 10),
