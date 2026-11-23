@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
-import '../../core/responsive/responsive_layout.dart';
 import '../../core/utils/phone_utils.dart';
 import '../../providers/donor_provider.dart';
 import '../../providers/campaign_provider.dart';
@@ -21,7 +20,9 @@ class DashboardView extends StatelessWidget {
     final campaignProv = context.watch<CampaignProvider>();
     final donationProv = context.watch<DonationProvider>();
 
-    if (donorProv.isLoading || campaignProv.isLoading || donationProv.isLoading) {
+    if (donorProv.isLoading ||
+        campaignProv.isLoading ||
+        donationProv.isLoading) {
       return const Center(
         child: Padding(
           padding: EdgeInsets.all(40),
@@ -62,9 +63,15 @@ class DashboardView extends StatelessWidget {
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(flex: 5, child: _buildBloodDistributionCard(donorProv)),
+                  Expanded(
+                    flex: 5,
+                    child: _buildBloodDistributionCard(donorProv),
+                  ),
                   const SizedBox(width: 20),
-                  Expanded(flex: 4, child: _buildRegionalDistributionCard(donorProv)),
+                  Expanded(
+                    flex: 4,
+                    child: _buildRegionalDistributionCard(donorProv),
+                  ),
                 ],
               );
             } else {
@@ -88,9 +95,15 @@ class DashboardView extends StatelessWidget {
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(flex: 6, child: _buildRecentDonorsCard(context, donorProv)),
+                  Expanded(
+                    flex: 6,
+                    child: _buildRecentDonorsCard(context, donorProv),
+                  ),
                   const SizedBox(width: 20),
-                  Expanded(flex: 4, child: _buildRecentCampaignsCard(context, campaignProv)),
+                  Expanded(
+                    flex: 4,
+                    child: _buildRecentCampaignsCard(context, campaignProv),
+                  ),
                 ],
               );
             } else {
@@ -111,71 +124,112 @@ class DashboardView extends StatelessWidget {
   Widget _buildHeader(BuildContext context) {
     final navProv = context.read<NavigationProvider>();
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    final welcome = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'لوحة متابعة وإحصائيات بنك الدم',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          '${AppConstants.orgName} • ${AppConstants.orgLocation}',
+          style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+        ),
+      ],
+    );
+    final actions = Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        ElevatedButton.icon(
+          icon: const Icon(Icons.person_add_alt_1_rounded, size: 18),
+          label: const Text('إضافة متبرع'),
+          onPressed: () => showDialog(
+            context: context,
+            builder: (_) => const DonorFormDialog(),
+          ),
+        ),
+        OutlinedButton.icon(
+          icon: const Icon(Icons.search_rounded, size: 18),
+          label: const Text('بحث عن متبرع'),
+          onPressed: () => navProv.setIndex(2),
+        ),
+        OutlinedButton.icon(
+          icon: const Icon(Icons.add_task_rounded, size: 18),
+          label: const Text('تسجيل تبرع'),
+          onPressed: () => showDialog(
+            context: context,
+            builder: (_) => const DonationRecordDialog(),
+          ),
+        ),
+      ],
+    );
+    return SizedBox(
+      width: double.infinity,
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              if (constraints.maxWidth < 900) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [welcome, const SizedBox(height: 16), actions],
+                );
+              }
+              return Row(
                 children: [
-                  const Text(
-                    'لوحة متابعة وإحصائيات بنك الدم',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${AppConstants.orgName} • ${AppConstants.orgLocation}',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
+                  Expanded(child: welcome),
+                  const SizedBox(width: 20),
+                  Flexible(child: actions),
                 ],
-              ),
-            ),
-            const SizedBox(width: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.person_add_alt_1_rounded, size: 18),
-                  label: const Text('إضافة متبرع'),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (_) => const DonorFormDialog(),
-                    );
-                  },
-                ),
-                OutlinedButton.icon(
-                  icon: const Icon(Icons.search_rounded, size: 18),
-                  label: const Text('بحث عن متبرع'),
-                  onPressed: () {
-                    navProv.setIndex(2); // Go to search
-                  },
-                ),
-                OutlinedButton.icon(
-                  icon: const Icon(Icons.add_task_rounded, size: 18),
-                  label: const Text('تسجيل تبرع'),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (_) => const DonationRecordDialog(),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ],
+              );
+            },
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _cardHeading(IconData icon, String title, {Widget? trailing}) {
+    final heading = Row(
+      children: [
+        Icon(icon, size: 20, color: AppColors.primaryRed),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
+          ),
+        ),
+      ],
+    );
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (trailing == null) return heading;
+        if (constraints.maxWidth < 520) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [heading, const SizedBox(height: 4), trailing],
+          );
+        }
+        return Row(
+          children: [
+            Expanded(child: heading),
+            const SizedBox(width: 12),
+            trailing,
+          ],
+        );
+      },
     );
   }
 
@@ -250,7 +304,10 @@ class DashboardView extends StatelessWidget {
             final item = items[index];
             return Card(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 child: Row(
                   children: [
                     Container(
@@ -321,24 +378,16 @@ class DashboardView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                const Icon(Icons.bar_chart_rounded, size: 20, color: AppColors.primaryRed),
-                const SizedBox(width: 8),
-                const Text(
-                  'توزيع المتبرعين حسب فصيلة الدم',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+            _cardHeading(
+              Icons.bar_chart_rounded,
+              'توزيع المتبرعين حسب فصيلة الدم',
+              trailing: Text(
+                'إجمالي: $total متبرع',
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: AppColors.textMuted,
                 ),
-                const Spacer(),
-                Text(
-                  'إجمالي: $total متبرع',
-                  style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
-                ),
-              ],
+              ),
             ),
             const SizedBox(height: 16),
             if (total == 0)
@@ -349,82 +398,90 @@ class DashboardView extends StatelessWidget {
                 ),
               )
             else
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  mainAxisExtent: 64,
-                ),
-                itemCount: AppConstants.bloodTypes.length,
-                itemBuilder: (context, index) {
-                  final bt = AppConstants.bloodTypes[index];
-                  final count = dist[bt] ?? 0;
-                  final percentage = total > 0 ? (count / total) * 100 : 0.0;
+              LayoutBuilder(
+                builder: (context, constraints) => GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: constraints.maxWidth < 520 ? 1 : 2,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    mainAxisExtent: 64,
+                  ),
+                  itemCount: AppConstants.bloodTypes.length,
+                  itemBuilder: (context, index) {
+                    final bt = AppConstants.bloodTypes[index];
+                    final count = dist[bt] ?? 0;
+                    final percentage = total > 0 ? (count / total) * 100 : 0.0;
 
-                  return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: AppColors.bgSurface,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColors.border),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: AppColors.primaryRed,
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Text(
-                                bt,
-                                style: const TextStyle(
-                                  color: AppColors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.bgSurface,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: AppColors.border),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primaryRed,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  bt,
+                                  style: const TextStyle(
+                                    color: AppColors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
                                 ),
                               ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              '$count متبرع',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                                color: AppColors.textPrimary,
+                              const Spacer(),
+                              Text(
+                                '$count متبرع',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                  color: AppColors.textPrimary,
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              '(${percentage.toStringAsFixed(1)}%)',
-                              style: const TextStyle(
-                                fontSize: 10,
-                                color: AppColors.textMuted,
+                              const SizedBox(width: 4),
+                              Text(
+                                '(${percentage.toStringAsFixed(1)}%)',
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  color: AppColors.textMuted,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 6),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(4),
-                          child: LinearProgressIndicator(
-                            value: total > 0 ? count / total : 0,
-                            minHeight: 5,
-                            backgroundColor: AppColors.border,
-                            color: AppColors.primaryRed,
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+                          const SizedBox(height: 6),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: LinearProgressIndicator(
+                              value: total > 0 ? count / total : 0,
+                              minHeight: 5,
+                              backgroundColor: AppColors.border,
+                              color: AppColors.primaryRed,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
           ],
         ),
@@ -442,19 +499,9 @@ class DashboardView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
-              children: [
-                Icon(Icons.location_city_rounded, size: 20, color: AppColors.primaryRed),
-                SizedBox(width: 8),
-                Text(
-                  'توزيع المتبرعين حسب المنطقة / القرية',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-              ],
+            _cardHeading(
+              Icons.location_city_rounded,
+              'توزيع المتبرعين حسب المنطقة / القرية',
             ),
             const SizedBox(height: 16),
             if (dist.isEmpty)
@@ -476,7 +523,10 @@ class DashboardView extends StatelessWidget {
                   final percentage = total > 0 ? (count / total) * 100 : 0.0;
 
                   return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.bgSurface,
                       borderRadius: BorderRadius.circular(8),
@@ -484,7 +534,11 @@ class DashboardView extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.place_outlined, size: 16, color: AppColors.primaryRed),
+                        const Icon(
+                          Icons.place_outlined,
+                          size: 16,
+                          color: AppColors.primaryRed,
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
@@ -506,7 +560,10 @@ class DashboardView extends StatelessWidget {
                         ),
                         const SizedBox(width: 6),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.redSoftBg,
                             borderRadius: BorderRadius.circular(10),
@@ -541,24 +598,13 @@ class DashboardView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                const Icon(Icons.person_pin_rounded, size: 20, color: AppColors.primaryRed),
-                const SizedBox(width: 8),
-                const Text(
-                  'آخر المتبرعين المضافين',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const Spacer(),
-                TextButton(
-                  onPressed: () => navProv.setIndex(1), // View all donors
-                  child: const Text('عرض جميع المتبرعين'),
-                ),
-              ],
+            _cardHeading(
+              Icons.person_pin_rounded,
+              'آخر المتبرعين المضافين',
+              trailing: TextButton(
+                onPressed: () => navProv.setIndex(1),
+                child: const Text('عرض جميع المتبرعين'),
+              ),
             ),
             const SizedBox(height: 12),
             if (recent.isEmpty)
@@ -576,8 +622,55 @@ class DashboardView extends StatelessWidget {
                 separatorBuilder: (_, __) => const Divider(height: 1),
                 itemBuilder: (context, index) {
                   final donor = recent[index];
-                  return ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                  final actions = Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (donor.phone.isNotEmpty) ...[
+                        IconButton(
+                          icon: const Icon(
+                            Icons.phone_rounded,
+                            color: AppColors.primaryRed,
+                            size: 18,
+                          ),
+                          tooltip: 'اتصال هاتفياً',
+                          onPressed: () => PhoneUtils.makeCall(donor.phone),
+                        ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.chat_bubble_rounded,
+                            color: AppColors.whatsapp,
+                            size: 18,
+                          ),
+                          tooltip: 'تواصل عبر واتساب',
+                          onPressed: () => PhoneUtils.openWhatsApp(
+                            phoneNumber: donor.phone,
+                            donorName: donor.name,
+                            bloodType: donor.bloodType,
+                          ),
+                        ),
+                      ],
+                      IconButton(
+                        icon: const Icon(
+                          Icons.visibility_outlined,
+                          size: 18,
+                          color: AppColors.textSecondary,
+                        ),
+                        tooltip: 'عرض الملف الكامل',
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => DonorDetailDialog(donor: donor),
+                          );
+                        },
+                      ),
+                    ],
+                  );
+                  final compact = MediaQuery.sizeOf(context).width < 600;
+                  final tile = ListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 4,
+                    ),
                     leading: Container(
                       width: 40,
                       height: 40,
@@ -606,39 +699,23 @@ class DashboardView extends StatelessWidget {
                     ),
                     subtitle: Text(
                       '${donor.phone.isNotEmpty ? donor.phone : "بدون هاتف"} • ${donor.city}',
-                      style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textMuted,
+                      ),
                     ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (donor.phone.isNotEmpty) ...[
-                          IconButton(
-                            icon: const Icon(Icons.phone_rounded, color: AppColors.primaryRed, size: 18),
-                            tooltip: 'اتصال هاتفياً',
-                            onPressed: () => PhoneUtils.makeCall(donor.phone),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.chat_bubble_rounded, color: AppColors.whatsapp, size: 18),
-                            tooltip: 'تواصل عبر واتساب',
-                            onPressed: () => PhoneUtils.openWhatsApp(
-                              phoneNumber: donor.phone,
-                              donorName: donor.name,
-                              bloodType: donor.bloodType,
-                            ),
-                          ),
-                        ],
-                        IconButton(
-                          icon: const Icon(Icons.visibility_outlined, size: 18, color: AppColors.textSecondary),
-                          tooltip: 'عرض الملف الكامل',
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (_) => DonorDetailDialog(donor: donor),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
+                    trailing: compact ? null : actions,
+                  );
+                  if (!compact) return tile;
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      tile,
+                      Align(
+                        alignment: AlignmentDirectional.centerEnd,
+                        child: actions,
+                      ),
+                    ],
                   );
                 },
               ),
@@ -648,7 +725,10 @@ class DashboardView extends StatelessWidget {
     );
   }
 
-  Widget _buildRecentCampaignsCard(BuildContext context, CampaignProvider provider) {
+  Widget _buildRecentCampaignsCard(
+    BuildContext context,
+    CampaignProvider provider,
+  ) {
     final recent = provider.recentCampaigns;
     final navProv = context.read<NavigationProvider>();
 
@@ -658,24 +738,13 @@ class DashboardView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                const Icon(Icons.event_note_rounded, size: 20, color: AppColors.primaryRed),
-                const SizedBox(width: 8),
-                const Text(
-                  'أحدث الحملات والمبادرات',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const Spacer(),
-                TextButton(
-                  onPressed: () => navProv.setIndex(3), // View all campaigns
-                  child: const Text('عرض الكل'),
-                ),
-              ],
+            _cardHeading(
+              Icons.event_note_rounded,
+              'أحدث الحملات والمبادرات',
+              trailing: TextButton(
+                onPressed: () => navProv.setIndex(3),
+                child: const Text('عرض الكل'),
+              ),
             ),
             const SizedBox(height: 12),
             if (recent.isEmpty)
@@ -723,7 +792,10 @@ class DashboardView extends StatelessWidget {
                               ),
                             ),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
                                 color: statusColor.withValues(alpha: 0.12),
                                 borderRadius: BorderRadius.circular(12),
@@ -740,20 +812,37 @@ class DashboardView extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 6),
-                        Row(
+                        Wrap(
+                          spacing: 4,
+                          runSpacing: 4,
+                          crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
-                            const Icon(Icons.calendar_today_rounded, size: 12, color: AppColors.textMuted),
+                            const Icon(
+                              Icons.calendar_today_rounded,
+                              size: 12,
+                              color: AppColors.textMuted,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               camp.date,
-                              style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: AppColors.textSecondary,
+                              ),
                             ),
                             const SizedBox(width: 12),
-                            const Icon(Icons.people_outline_rounded, size: 12, color: AppColors.textMuted),
+                            const Icon(
+                              Icons.people_outline_rounded,
+                              size: 12,
+                              color: AppColors.textMuted,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               '${camp.participantCount} مشارك',
-                              style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: AppColors.textSecondary,
+                              ),
                             ),
                           ],
                         ),
