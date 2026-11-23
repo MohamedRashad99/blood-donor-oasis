@@ -1,3 +1,4 @@
+import '../../core/responsive/adaptive_row.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
@@ -264,7 +265,7 @@ class _DonorFormDialogState extends State<DonorFormDialog> {
                         const SizedBox(height: 14),
 
                         // Phone & Blood Type row
-                        Row(
+                        AdaptiveRow(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             // Phone
@@ -295,6 +296,7 @@ class _DonorFormDialogState extends State<DonorFormDialog> {
                             Expanded(
                               flex: 2,
                               child: DropdownButtonFormField<String>(
+                        isExpanded: true,
                                 initialValue: _selectedBloodType,
                                 decoration: const InputDecoration(
                                   labelText: 'فصيلة الدم *',
@@ -332,11 +334,12 @@ class _DonorFormDialogState extends State<DonorFormDialog> {
                         ),
                         const SizedBox(height: 12),
 
-                        Row(
+                        AdaptiveRow(
                           children: [
                             // Governorate
                             Expanded(
                               child: DropdownButtonFormField<String>(
+                        isExpanded: true,
                                 initialValue: _selectedGovernorate,
                                 decoration: const InputDecoration(
                                   labelText: 'المحافظة',
@@ -355,6 +358,7 @@ class _DonorFormDialogState extends State<DonorFormDialog> {
                             // Village / City
                             Expanded(
                               child: DropdownButtonFormField<String>(
+                        isExpanded: true,
                                 initialValue: _selectedVillage,
                                 decoration: const InputDecoration(
                                   labelText: 'القرية / المركز',
@@ -397,7 +401,7 @@ class _DonorFormDialogState extends State<DonorFormDialog> {
                         ),
                         const SizedBox(height: 12),
 
-                        Row(
+                        AdaptiveRow(
                           children: [
                             // Age
                             Expanded(
@@ -425,6 +429,7 @@ class _DonorFormDialogState extends State<DonorFormDialog> {
                             // Gender
                             Expanded(
                               child: DropdownButtonFormField<String>(
+                        isExpanded: true,
                                 initialValue: _selectedGender,
                                 decoration: const InputDecoration(
                                   labelText: 'النوع',
@@ -444,7 +449,7 @@ class _DonorFormDialogState extends State<DonorFormDialog> {
                         const SizedBox(height: 14),
 
                         // Last Donation Date
-                        Row(
+                        AdaptiveRow(
                           children: [
                             Expanded(
                               child: TextFormField(
@@ -476,14 +481,14 @@ class _DonorFormDialogState extends State<DonorFormDialog> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(
+                                    Flexible(child: Text(
                                       _available ? 'متاح للتبرع' : 'غير متاح',
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 13,
                                         color: _available ? AppColors.success : AppColors.error,
                                       ),
-                                    ),
+                                    )),
                                     Switch(
                                       value: _available,
                                       activeColor: AppColors.success,
@@ -517,8 +522,8 @@ class _DonorFormDialogState extends State<DonorFormDialog> {
                 const SizedBox(height: 12),
 
                 // Form Buttons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                Wrap(spacing: 8, runSpacing: 8, crossAxisAlignment: WrapCrossAlignment.center,
+                  
                   children: [
                     OutlinedButton(
                       onPressed: () => Navigator.pop(context),
