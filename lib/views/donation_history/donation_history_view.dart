@@ -1,3 +1,4 @@
+import '../../core/responsive/adaptive_row.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
@@ -46,7 +47,7 @@ class DonationHistoryView extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                Row(
+                AdaptiveRow(
                   children: [
                     const Icon(Icons.history_edu_rounded, size: 24, color: AppColors.primaryRed),
                     const SizedBox(width: 10),
@@ -83,7 +84,7 @@ class DonationHistoryView extends StatelessWidget {
                 const SizedBox(height: 12),
 
                 // Search & Filter
-                Row(
+                AdaptiveRow(
                   children: [
                     Expanded(
                       flex: 3,
@@ -101,6 +102,7 @@ class DonationHistoryView extends StatelessWidget {
                     Expanded(
                       flex: 2,
                       child: DropdownButtonFormField<String?>(
+                        isExpanded: true,
                         value: donationProv.selectedStatusFilter,
                         decoration: const InputDecoration(
                           labelText: 'حالة التبرع',
