@@ -18,7 +18,7 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final navProvider = context.watch<NavigationProvider>();
     final authProvider = context.watch<AuthProvider>();
-    final isMobile = ResponsiveLayout.isMobile(context);
+    final isMobile = MediaQuery.sizeOf(context).width < 1280;
 
     final title = AppConstants.navTitles[navProvider.currentIndex];
 
@@ -26,27 +26,32 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
       height: 72,
       decoration: const BoxDecoration(
         color: AppColors.white,
-        border: Border(
-          bottom: BorderSide(color: AppColors.border, width: 1),
-        ),
+        border: Border(bottom: BorderSide(color: AppColors.border, width: 1)),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
-          if (isMobile)
+          if (!ResponsiveLayout.isDesktop(context))
             IconButton(
-              icon: const Icon(Icons.menu_rounded, color: AppColors.darkNeutral),
+              icon: const Icon(
+                Icons.menu_rounded,
+                color: AppColors.darkNeutral,
+              ),
               onPressed: onMenuPressed,
               tooltip: 'القائمة الرئيسية',
             ),
 
           // Active Section Title
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+          Expanded(
+            child: Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
             ),
           ),
 
@@ -59,12 +64,18 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
               decoration: BoxDecoration(
                 color: AppColors.redSoftBg,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.primaryRedLight.withValues(alpha: 0.3)),
+                border: Border.all(
+                  color: AppColors.primaryRedLight.withValues(alpha: 0.3),
+                ),
               ),
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.favorite_rounded, size: 14, color: AppColors.primaryRed),
+                  Icon(
+                    Icons.favorite_rounded,
+                    size: 14,
+                    color: AppColors.primaryRed,
+                  ),
                   SizedBox(width: 6),
                   Text(
                     AppConstants.slogan,
@@ -78,10 +89,10 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
 
-          const Spacer(),
+          const SizedBox(width: 8),
 
           // Supervisor Pill (desktop only)
-          if (ResponsiveLayout.isDesktop(context))
+          if (MediaQuery.sizeOf(context).width >= 1440)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -93,7 +104,11 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.engineering_rounded, size: 14, color: AppColors.textSecondary),
+                  Icon(
+                    Icons.engineering_rounded,
+                    size: 14,
+                    color: AppColors.textSecondary,
+                  ),
                   SizedBox(width: 6),
                   Text(
                     AppConstants.supervisor,
@@ -163,7 +178,11 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
                       ],
                     ),
                     const SizedBox(width: 6),
-                    const Icon(Icons.arrow_drop_down_rounded, size: 20, color: AppColors.textSecondary),
+                    const Icon(
+                      Icons.arrow_drop_down_rounded,
+                      size: 20,
+                      color: AppColors.textSecondary,
+                    ),
                   ],
                 ],
               ),
@@ -183,11 +202,17 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
                   children: [
                     Text(
                       authProvider.user.displayName,
-                      style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
                     Text(
                       authProvider.user.role,
-                      style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textMuted,
+                      ),
                     ),
                     const Divider(),
                   ],
@@ -197,7 +222,11 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
                 value: 'settings',
                 child: Row(
                   children: [
-                    Icon(Icons.settings_outlined, size: 18, color: AppColors.textSecondary),
+                    Icon(
+                      Icons.settings_outlined,
+                      size: 18,
+                      color: AppColors.textSecondary,
+                    ),
                     SizedBox(width: 8),
                     Text('الإعدادات والنظام'),
                   ],
@@ -207,9 +236,16 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
                 value: 'logout',
                 child: Row(
                   children: [
-                    Icon(Icons.logout_rounded, size: 18, color: AppColors.error),
+                    Icon(
+                      Icons.logout_rounded,
+                      size: 18,
+                      color: AppColors.error,
+                    ),
                     SizedBox(width: 8),
-                    Text('تسجيل الخروج', style: TextStyle(color: AppColors.error)),
+                    Text(
+                      'تسجيل الخروج',
+                      style: TextStyle(color: AppColors.error),
+                    ),
                   ],
                 ),
               ),

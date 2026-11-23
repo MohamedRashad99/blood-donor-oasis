@@ -60,41 +60,43 @@ class _MainScaffoldState extends State<MainScaffold> {
                 ),
               ),
             ),
-      body: Row(
-        children: [
-          // Desktop Fixed Sidebar
-          if (isDesktop) const Sidebar(),
+      body: SafeArea(
+        child: Row(
+          children: [
+            // Desktop Fixed Sidebar
+            if (isDesktop) const Sidebar(),
 
-          // Main View Area
-          Expanded(
-            child: Column(
-              children: [
-                TopBar(
-                  onMenuPressed: () {
-                    _scaffoldKey.currentState?.openDrawer();
-                  },
-                ),
-                Expanded(
-                  child: Container(
-                    color: AppColors.bgSurface,
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: SingleChildScrollView(
-                            padding: const EdgeInsets.all(20),
-                            child: currentPage,
+            // Main View Area
+            Expanded(
+              child: Column(
+                children: [
+                  TopBar(
+                    onMenuPressed: () {
+                      _scaffoldKey.currentState?.openDrawer();
+                    },
+                  ),
+                  Expanded(
+                    child: Container(
+                      color: AppColors.bgSurface,
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: SingleChildScrollView(
+                              padding: EdgeInsets.all(isDesktop ? 20 : 12),
+                              child: currentPage,
+                            ),
                           ),
-                        ),
-                        // Global Footer
-                        _buildFooter(context),
-                      ],
+                          // Global Footer
+                          _buildFooter(context),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -105,9 +107,7 @@ class _MainScaffoldState extends State<MainScaffold> {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: const BoxDecoration(
         color: AppColors.white,
-        border: Border(
-          top: BorderSide(color: AppColors.border),
-        ),
+        border: Border(top: BorderSide(color: AppColors.border)),
       ),
       child: Wrap(
         alignment: WrapAlignment.spaceBetween,
@@ -118,14 +118,20 @@ class _MainScaffoldState extends State<MainScaffold> {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.favorite_rounded, size: 14, color: AppColors.primaryRed),
+              const Icon(
+                Icons.favorite_rounded,
+                size: 14,
+                color: AppColors.primaryRed,
+              ),
               const SizedBox(width: 6),
-              Text(
-                '${AppConstants.orgName} • ${AppConstants.slogan}',
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textSecondary,
+              Flexible(
+                child: Text(
+                  '${AppConstants.orgName} • ${AppConstants.slogan}',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ),
             ],
