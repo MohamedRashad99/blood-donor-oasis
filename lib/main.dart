@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'firebase_options.dart';
+import 'repositories/firebase_auth_repository.dart';
 
 import 'core/theme/app_theme.dart';
 import 'core/constants/app_constants.dart';
@@ -18,12 +21,13 @@ import 'views/auth/login_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.web);
 
   // Initialize data repositories
   final donorRepository = await LocalDonorRepository.create();
   final campaignRepository = await LocalCampaignRepository.create();
   final donationRepository = await LocalDonationRepository.create();
-  final authRepository = await LocalAuthRepository.create();
+  final AuthRepository authRepository = FirebaseAuthRepository();
 
   runApp(
     MultiProvider(
