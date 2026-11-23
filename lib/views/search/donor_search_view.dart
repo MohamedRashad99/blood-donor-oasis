@@ -1,3 +1,4 @@
+import '../../core/responsive/adaptive_row.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
@@ -114,10 +115,10 @@ class _DonorSearchViewState extends State<DonorSearchView> {
                   children: [
                     Icon(Icons.bloodtype_rounded, size: 20, color: AppColors.primaryRed),
                     SizedBox(width: 8),
-                    Text(
+                    Flexible(child: Text(
                       'اختر فصيلة الدم المطلوبة للبحث السريع:',
                       style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
-                    ),
+                    )),
                   ],
                 ),
                 const SizedBox(height: 14),
@@ -181,12 +182,13 @@ class _DonorSearchViewState extends State<DonorSearchView> {
                 const SizedBox(height: 12),
 
                 // Secondary filters (Region & Availability & text search)
-                Row(
+                AdaptiveRow(
                   children: [
                     // Village / Area
                     Expanded(
                       flex: 2,
                       child: DropdownButtonFormField<String?>(
+                        isExpanded: true,
                         value: _selectedVillage,
                         decoration: const InputDecoration(
                           labelText: 'القرية أو المنطقة',
@@ -249,7 +251,7 @@ class _DonorSearchViewState extends State<DonorSearchView> {
         const SizedBox(height: 20),
 
         // Search Results Header
-        Row(
+        AdaptiveRow(
           children: [
             Text(
               'المتبرعون المطابقون (${matchingDonors.length} متبرع)',
@@ -307,6 +309,15 @@ class _DonorSearchViewState extends State<DonorSearchView> {
                 cols = 2;
               }
 
+              if (cols == 1) {
+                return ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: matchingDonors.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 16),
+                  itemBuilder: (context, index) => _buildDonorSearchCard(context, matchingDonors[index]),
+                );
+              }
               return GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -399,7 +410,7 @@ class _DonorSearchViewState extends State<DonorSearchView> {
                     ],
                   ),
                   const SizedBox(height: 4),
-                  Row(
+                  Wrap(spacing: 8, runSpacing: 8, crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       const Icon(Icons.place_outlined, size: 14, color: AppColors.textMuted),
                       const SizedBox(width: 4),
@@ -421,7 +432,7 @@ class _DonorSearchViewState extends State<DonorSearchView> {
                   const SizedBox(height: 10),
 
                   // Direct Action Buttons: Call & WhatsApp
-                  Row(
+                  Wrap(spacing: 8, runSpacing: 8, crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       if (donor.phone.isNotEmpty) ...[
                         ElevatedButton.icon(
