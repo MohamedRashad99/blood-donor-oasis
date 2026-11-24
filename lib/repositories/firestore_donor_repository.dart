@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/donor.dart';
 import 'donor_repository.dart';
@@ -23,28 +26,80 @@ class FirestoreDonorRepository extends LocalDonorRepository {
     return FirestoreDonorRepository._(prefs, FirebaseFirestore.instance);
   }
 
+  Future<void>? _loading;
+
   /// Loads the list once after sign-in. Nothing is read or written before an
   /// admin is signed in, and nothing is seeded if the read itself failed.
-  Future<void> _ensureLoaded() async {
-    if (_loaded || FirebaseAuth.instance.currentUser == null) return;
-    try {
-      final snap = await _db.collection(collection).get();
-      _remote.clear();
-      final donors = <Donor>[];
-      for (final d in snap.docs) {
-        final data = d.data();
-        _remote[d.id] = data;
-        donors.add(Donor.fromJson(data));
-      }
-      donors.sort((a, b) => a.id.compareTo(b.id));
-      _cache = donors;
-      _loaded = true;
-    } catch (_) {
-      return;
+  Future<void> _ensureLoaded() {
+    if (_loaded || FirebaseAuth.instance.currentUser == null) {
+      return Future.value();
     }
+    return _loading ??= _load().whenComplete(() => _loading = null);
+  }
+
+  Future<void> _load() async {
+    Map<String, Map<String, dynamic>>? docs;
+    try {
+      docs = await _fetchRest().timeout(const Duration(seconds: 12));
+    } catch (_) {
+      docs = null;
+    }
+    if (docs == null) {
+      try {
+        final snap = await _db.collection(collection).get();
+        docs = {for (final d in snap.docs) d.id: d.data()};
+      } catch (_) {
+        return;
+      }
+    }
+    _remote
+      ..clear()
+      ..addAll(docs);
+    final donors = docs.values.map(Donor.fromJson).toList()
+      ..sort((a, b) => a.id.compareTo(b.id));
+    _cache = donors;
+    _loaded = true;
     if (_cache.isEmpty) {
       await resetToInitialData();
     }
+  }
+
+  /// One plain HTTPS read of the collection with the admin's token. Much
+  /// faster to start than the Firestore streaming connection.
+  Future<Map<String, Map<String, dynamic>>> _fetchRest() async {
+    final token = await FirebaseAuth.instance.currentUser!.getIdToken();
+    final projectId = _db.app.options.projectId;
+    final out = <String, Map<String, dynamic>>{};
+    String? pageToken;
+    do {
+      final uri = Uri.https(
+        'firestore.googleapis.com',
+        '/v1/projects/$projectId/databases/(default)/documents/$collection',
+        {'pageSize': '300', if (pageToken != null) 'pageToken': pageToken},
+      );
+      final res = await http.get(uri, headers: {'Authorization': 'Bearer $token'});
+      if (res.statusCode != 200) {
+        throw StateError('Firestore REST ${res.statusCode}');
+      }
+      final body = jsonDecode(utf8.decode(res.bodyBytes)) as Map<String, dynamic>;
+      for (final d in (body['documents'] as List<dynamic>? ?? const [])) {
+        final doc = d as Map<String, dynamic>;
+        final id = (doc['name'] as String).split('/').last;
+        final fields = (doc['fields'] as Map<String, dynamic>?) ?? const {};
+        out[id] = {for (final e in fields.entries) e.key: _decode(e.value as Map<String, dynamic>)};
+      }
+      pageToken = body['nextPageToken'] as String?;
+    } while (pageToken != null && pageToken.isNotEmpty);
+    return out;
+  }
+
+  static dynamic _decode(Map<String, dynamic> v) {
+    if (v.containsKey('stringValue')) return v['stringValue'];
+    if (v.containsKey('integerValue')) return int.parse(v['integerValue'] as String);
+    if (v.containsKey('doubleValue')) return (v['doubleValue'] as num).toDouble();
+    if (v.containsKey('booleanValue')) return v['booleanValue'];
+    if (v.containsKey('timestampValue')) return v['timestampValue'];
+    return null;
   }
 
   @override
