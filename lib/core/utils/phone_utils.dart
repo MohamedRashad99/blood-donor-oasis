@@ -80,4 +80,20 @@ class PhoneUtils {
     }
     return false;
   }
+
+  /// Opens WhatsApp with [text] already filled in. Goes straight to the
+  /// donor's chat when the number is valid, otherwise lets the user pick a chat.
+  static Future<bool> openWhatsAppText({
+    required String phoneNumber,
+    required String text,
+  }) async {
+    final normalized = normalizeForWhatsApp(phoneNumber);
+    final target = (normalized == null || normalized.isEmpty) ? '' : normalized;
+    final uri = Uri.parse('https://wa.me/$target?text=${Uri.encodeComponent(text)}');
+    try {
+      return await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      return false;
+    }
+  }
 }

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/utils/image_compress.dart';
+import '../../core/utils/phone_utils.dart';
 import '../../core/utils/share_utils.dart';
 import '../../core/utils/thank_you_message.dart';
 import '../../models/donor.dart';
@@ -135,6 +136,22 @@ class _DonorFilesSectionState extends State<DonorFilesSection> {
     }
   }
 
+  Future<void> _sendWhatsApp() async {
+    final ok = await PhoneUtils.openWhatsAppText(
+      phoneNumber: widget.donor.phone,
+      text: _message.text,
+    );
+    if (!ok) {
+      await Clipboard.setData(ClipboardData(text: _message.text));
+      _snack('تعذر فتح واتساب. تم نسخ نص الرسالة.', ok: false);
+    }
+  }
+
+  Future<void> _copy() async {
+    await Clipboard.setData(ClipboardData(text: _message.text));
+    _snack('تم نسخ الرسالة');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -188,7 +205,33 @@ class _DonorFilesSectionState extends State<DonorFilesSection> {
           style: const TextStyle(fontSize: 13, height: 1.6),
           decoration: const InputDecoration(border: OutlineInputBorder()),
         ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.whatsapp,
+                  foregroundColor: AppColors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+                onPressed: _sendWhatsApp,
+                icon: const Icon(Icons.send_rounded, size: 18),
+                label: const Text('إرسال الرسالة على واتساب'),
+              ),
+            ),
+            const SizedBox(width: 8),
+            OutlinedButton.icon(
+              onPressed: _copy,
+              icon: const Icon(Icons.copy_rounded, size: 16),
+              label: const Text('نسخ'),
+            ),
+          ],
+        ),
         const SizedBox(height: 6),
+        const Text('زر واتساب يفتح محادثة المتبرع بالرسالة جاهزة. لو عايز ترسل الصورة معها، اضغط "مشاركة" تحت الصورة، أو أرفقها بعد فتح المحادثة.',
+            style: TextStyle(fontSize: 11, color: AppColors.textMuted)),
+        const SizedBox(height: 4),
         const Text('اضغط "مشاركة" تحت أي صورة، وسيفتح الهاتف قائمة المشاركة بالرسالة والصورة معاً لتختار واتساب والمتبرع.',
             style: TextStyle(fontSize: 11, color: AppColors.textMuted)),
       ],
