@@ -44,8 +44,9 @@ class LocalDonorRepository implements DonorRepository {
   }
 
   Future<void> _ensureInitialized() async {
-    final existingData = _prefs.getString(_storageKey);
-    if (existingData == null || existingData.trim().isEmpty) {
+    // Load the original list whenever nothing usable is stored (first open,
+    // empty list, or unreadable data) so the app never opens empty.
+    if ((await getAllDonors()).isEmpty) {
       await resetToInitialData();
     }
   }
@@ -78,7 +79,7 @@ class LocalDonorRepository implements DonorRepository {
   Future<void> addDonor(Donor donor) async {
     final donors = await getAllDonors();
     donors.insert(0, donor);
-    await _saveAll(donors);
+    await saveAll(donors);
   }
 
   @override
@@ -87,7 +88,7 @@ class LocalDonorRepository implements DonorRepository {
     final index = donors.indexWhere((d) => d.id == donor.id);
     if (index != -1) {
       donors[index] = donor;
-      await _saveAll(donors);
+      await saveAll(donors);
     }
   }
 
@@ -95,7 +96,7 @@ class LocalDonorRepository implements DonorRepository {
   Future<void> deleteDonor(String id) async {
     final donors = await getAllDonors();
     donors.removeWhere((d) => d.id == id);
-    await _saveAll(donors);
+    await saveAll(donors);
   }
 
   @override
@@ -135,7 +136,7 @@ class LocalDonorRepository implements DonorRepository {
       inserted++;
     }
 
-    await _saveAll(existing);
+    await saveAll(existing);
     return ImportResult(
       totalProcessed: newDonors.length,
       insertedCount: inserted,
@@ -150,14 +151,14 @@ class LocalDonorRepository implements DonorRepository {
     try {
       final csvString = await rootBundle.loadString('assets/data/initial_donors.csv');
       final donors = parseCsvToDonors(csvString);
-      await _saveAll(donors);
-    } catch (e) {
-      // Fallback if asset loading fails
-      await _saveAll([]);
+      await saveAll(donors);
+    } catch (_) {
+      // If the asset cannot be read, leave storage untouched. Saving an empty
+      // list here made the app open empty until a manual restore.
     }
   }
 
-  Future<void> _saveAll(List<Donor> donors) async {
+  Future<void> saveAll(List<Donor> donors) async {
     final encoded = jsonEncode(donors.map((d) => d.toJson()).toList());
     await _prefs.setString(_storageKey, encoded);
   }

@@ -1,9 +1,10 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Donor result images: only these admin accounts can read or write.
-    match /donorFiles/{fileId} {
-      allow read, write: if request.auth != null
+    // Donor list and donor result images: only these admin accounts.
+    match /{collection}/{docId} {
+      allow read, write: if (collection == 'donors' || collection == 'donorFiles')
+        && request.auth != null
         && request.auth.token.email in [
           '2026@blooddonor.app',
           'kafala@blooddonor.app'
