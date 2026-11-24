@@ -191,7 +191,7 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
               if (value == 'logout') {
                 authProvider.logout();
               } else if (value == 'settings') {
-                navProvider.setIndex(7);
+                navProvider.setIndex(8);
               }
             },
             itemBuilder: (context) => [
