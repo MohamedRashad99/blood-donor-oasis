@@ -3,6 +3,8 @@ import '../constants/app_constants.dart';
 /// Thank-you message sent by an admin to a donor on WhatsApp (about 10 lines).
 /// Wording follows the campaign line "نقطة دم منك تكون سبب في إنسان يرجع لأهله".
 class ThankYouMessage {
+  static const String senderName = 'جمعية كفالة اليتيم بمدينة محلة دمنة';
+
   static String build({required String donorName, String bloodType = ''}) {
     final blood = bloodType.isNotEmpty ? ' (فصيلة دمك: $bloodType)' : '';
     return '''🩸 *شكراً من القلب* 🩸
@@ -15,7 +17,7 @@ class ThankYouMessage {
 
 📎 نتيجة التحاليل مرفقة مع الرسالة.
 
-_رسالة من ${AppConstants.orgName} عبر المنصة الرقمية_
+_رسالة من $senderName عبر المنصة الرقمية_
 *${AppConstants.slogan}*''';
   }
 }
