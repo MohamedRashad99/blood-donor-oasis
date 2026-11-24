@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'repositories/firebase_auth_repository.dart';
 import 'repositories/donor_files_repository.dart';
+import 'repositories/firestore_donor_repository.dart';
 import 'repositories/preview_auth_repository.dart';
 
 import 'core/theme/app_theme.dart';
@@ -26,7 +27,10 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.web);
 
   // Initialize data repositories
-  final donorRepository = await LocalDonorRepository.create();
+  const previewMode = bool.fromEnvironment('PREVIEW');
+  final DonorRepository donorRepository = previewMode
+      ? await LocalDonorRepository.create()
+      : await FirestoreDonorRepository.createFirestore();
   final campaignRepository = await LocalCampaignRepository.create();
   final donationRepository = await LocalDonationRepository.create();
   // Preview builds (--dart-define=PREVIEW=true) skip login and save nothing.
@@ -82,9 +86,31 @@ class BloodDonorApp extends StatelessWidget {
           if (!auth.isAuthenticated) {
             return const LoginView();
           }
-          return const MainScaffold();
+          return const _LoadDonorsOnEntry(child: MainScaffold());
         },
       ),
     );
   }
+}
+
+/// Donors live in Firestore: load them once the admin is signed in.
+class _LoadDonorsOnEntry extends StatefulWidget {
+  final Widget child;
+  const _LoadDonorsOnEntry({required this.child});
+
+  @override
+  State<_LoadDonorsOnEntry> createState() => _LoadDonorsOnEntryState();
+}
+
+class _LoadDonorsOnEntryState extends State<_LoadDonorsOnEntry> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) context.read<DonorProvider>().loadDonors();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
