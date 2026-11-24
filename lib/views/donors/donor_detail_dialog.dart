@@ -8,6 +8,7 @@ import '../../providers/donor_provider.dart';
 import '../../providers/donation_provider.dart';
 import '../../providers/campaign_provider.dart';
 import 'donor_form_dialog.dart';
+import 'donor_files_section.dart';
 
 class DonorDetailDialog extends StatelessWidget {
   final Donor donor;
@@ -278,6 +279,10 @@ class DonorDetailDialog extends StatelessWidget {
                             );
                           },
                         ),
+                      const SizedBox(height: 16),
+
+                      // Result images + thank-you message
+                      DonorFilesSection(key: ValueKey(currentDonor.id), donor: currentDonor),
                       const SizedBox(height: 16),
 
                       // Associated Campaigns
