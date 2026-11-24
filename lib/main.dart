@@ -4,6 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'repositories/firebase_auth_repository.dart';
+import 'repositories/donor_files_repository.dart';
+import 'repositories/preview_auth_repository.dart';
 
 import 'core/theme/app_theme.dart';
 import 'core/constants/app_constants.dart';
@@ -27,7 +29,13 @@ void main() async {
   final donorRepository = await LocalDonorRepository.create();
   final campaignRepository = await LocalCampaignRepository.create();
   final donationRepository = await LocalDonationRepository.create();
-  final AuthRepository authRepository = FirebaseAuthRepository();
+  // Preview builds (--dart-define=PREVIEW=true) skip login and save nothing.
+  const preview = bool.fromEnvironment('PREVIEW');
+  final AuthRepository authRepository =
+      preview ? PreviewAuthRepository() : FirebaseAuthRepository();
+  final DonorFilesRepository donorFilesRepository = preview
+      ? InMemoryDonorFilesRepository()
+      : FirestoreDonorFilesRepository();
 
   runApp(
     MultiProvider(
@@ -37,6 +45,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => DonationProvider(donationRepository)),
         ChangeNotifierProvider(create: (_) => AuthProvider(authRepository)),
         ChangeNotifierProvider(create: (_) => NavigationProvider()),
+        Provider<DonorFilesRepository>.value(value: donorFilesRepository),
       ],
       child: const BloodDonorApp(),
     ),

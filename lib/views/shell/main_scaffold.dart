@@ -16,6 +16,7 @@ import '../donation_history/donation_history_view.dart';
 import '../reports/reports_view.dart';
 import '../import/import_view.dart';
 import '../settings/settings_view.dart';
+import '../guidance/guidance_view.dart';
 
 class MainScaffold extends StatefulWidget {
   const MainScaffold({super.key});
@@ -40,6 +41,7 @@ class _MainScaffoldState extends State<MainScaffold> {
       const DonationHistoryView(),
       const ReportsView(),
       const ImportView(),
+      const GuidanceView(),
       const SettingsView(),
     ];
 

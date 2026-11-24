@@ -21,7 +21,8 @@ class Sidebar extends StatelessWidget {
       _MenuItem(4, AppConstants.navTitles[4], Icons.history_edu_rounded),
       _MenuItem(5, AppConstants.navTitles[5], Icons.bar_chart_rounded),
       _MenuItem(6, AppConstants.navTitles[6], Icons.file_upload_rounded),
-      _MenuItem(7, AppConstants.navTitles[7], Icons.settings_rounded),
+      _MenuItem(7, AppConstants.navTitles[7], Icons.rule_rounded),
+      _MenuItem(8, AppConstants.navTitles[8], Icons.settings_rounded),
     ];
 
     return Container(
